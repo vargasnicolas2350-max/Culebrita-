@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Juego de la Culebrita - 20 Niveles</title>
+  <title>Juego de la Culebrita - Crecimiento Continuo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -153,7 +153,7 @@
     </div>
 
     <div class="controls-hint">
-      Cada nivel incrementa la velocidad y agrega obstáculos.
+      Comer manzanas hace crecer a la culebra y mantendrá su tamaño entre niveles.
     </div>
   </div>
 
@@ -179,7 +179,7 @@
       dx: grid,
       dy: 0,
       cells: [],
-      maxCells: 4
+      maxCells: 4 // Tamaño inicial al arrancar el juego
     };
 
     let apple = { x: 320, y: 320 };
@@ -249,10 +249,10 @@
       const config = getLevelConfig(currentLevel);
       targetScoreElement.innerText = config.targetScore;
 
+      // Reubicamos la cabeza y reiniciamos la dirección pero MANTENEMOS snake.maxCells (su tamaño actual)
       snake.x = 160;
       snake.y = 160;
       snake.cells = [];
-      snake.maxCells = 4;
       snake.dx = grid;
       snake.dy = 0;
 
@@ -263,6 +263,7 @@
     function resetGame() {
       score = 0;
       scoreElement.innerText = score;
+      snake.maxCells = 4; // Solo aquí (al perder/reiniciar) vuelve al tamaño inicial
       loadLevel(1);
     }
 
@@ -308,7 +309,7 @@
 
         // Comer la manzana
         if (cell.x === apple.x && cell.y === apple.y) {
-          snake.maxCells++;
+          snake.maxCells++; // Crece en tamaño cada vez que come
           score += 10;
           scoreElement.innerText = score;
 
@@ -323,7 +324,7 @@
               alert(`¡Nivel ${currentLevel} superado! Siguiente nivel: Nivel ${currentLevel + 1}`);
               loadLevel(currentLevel + 1);
             } else {
-              alert("¡FELICIDADES! ¡Has ganado los 20 Niveles!");
+              alert("¡FELICIDADES! ¡Has superado los 20 Niveles!");
               resetGame();
             }
           } else {
@@ -334,7 +335,7 @@
         // Colisión consigo misma
         for (let i = index + 1; i < snake.cells.length; i++) {
           if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-            alert("¡Colisión! Reiniciando juego...");
+            alert("¡Chocaste contigo mismo! Reiniciando juego...");
             resetGame();
           }
         }
