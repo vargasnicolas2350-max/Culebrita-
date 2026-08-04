@@ -2,20 +2,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Juego de la Culebrita (Snake)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Juego de la Culebrita (Mobile Ready)</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="game-container">
-    <h1>🐍 Juego de la Culebrita</h1>
+    <h1>🐍 Culebrita Mobile</h1>
     <div class="score-board">
       <div>Puntaje: <span id="score">0</span></div>
       <div>Máximo: <span id="high-score">0</span></div>
     </div>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <!-- Controles táctiles en pantalla para celulares -->
+    <div class="dpad-container">
+      <div class="dpad-row">
+        <button id="btn-up" class="dpad-btn">▲</button>
+      </div>
+      <div class="dpad-row">
+        <button id="btn-left" class="dpad-btn">◄</button>
+        <div class="dpad-center"></div>
+        <button id="btn-right" class="dpad-btn">►</button>
+      </div>
+      <div class="dpad-row">
+        <button id="btn-down" class="dpad-btn">▼</button>
+      </div>
+    </div>
+
     <div class="controls-hint">
-      Usa las <strong>Flechas del Teclado</strong> para mover la culebrita.
+      Usa las <strong>flechas</strong>, <strong>botones en pantalla</strong> o <strong>desliza el dedo</strong> para jugar.
     </div>
   </div>
 
