@@ -75,6 +75,55 @@
       height: auto;
     }
 
+    /* Overlay modal integrado */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(13, 17, 23, 0.88);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+      color: #ffffff;
+      z-index: 10;
+      padding: 20px;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay h2 {
+      font-size: 22px;
+      color: #58a6ff;
+      margin-bottom: 8px;
+    }
+
+    .overlay p {
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 16px;
+    }
+
+    .overlay button {
+      background-color: #2ea043;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .overlay button:active {
+      background-color: #268435;
+    }
+
     /* Controles D-Pad */
     .dpad-container {
       display: flex;
@@ -135,6 +184,12 @@
     
     <div class="canvas-wrapper">
       <canvas id="gameCanvas" width="400" height="400"></canvas>
+      
+      <div id="overlay" class="overlay hidden">
+        <h2 id="overlay-title">¡Nivel Superado!</h2>
+        <p id="overlay-desc">Preparando siguiente nivel...</p>
+        <button id="overlay-btn">Continuar</button>
+      </div>
     </div>
 
     <!-- Controles táctiles -->
@@ -153,7 +208,7 @@
     </div>
 
     <div class="controls-hint">
-      Continuidad fluida: Mantiene su posición, dirección y tamaño al pasar de nivel.
+      Mantiene posición, dirección y tamaño entre niveles.
     </div>
   </div>
 
@@ -165,11 +220,19 @@
     const levelElement = document.getElementById("level");
     const highScoreElement = document.getElementById("high-score");
 
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlay-title");
+    const overlayDesc = document.getElementById("overlay-desc");
+    const overlayBtn = document.getElementById("overlay-btn");
+
     const grid = 20;
     let count = 0;
     let score = 0;
     let currentLevel = 1;
     let maxLevels = 20;
+    let isPaused = false;
+    let pendingAction = null;
+
     let highScore = localStorage.getItem("snakeHighScoreLevels") || 0;
     highScoreElement.innerText = highScore;
 
@@ -219,9 +282,11 @@
         }
       }
 
-      // Filtrar para NUNCA generar un obstáculo donde esté ocupado por el cuerpo de la culebra
+      // Zona de seguridad: No generar obstáculos sobre el cuerpo ni cerca de la cabeza
       return obs.filter(o => {
-        return !snake.cells.some(cell => cell.x === o.x && cell.y === o.y);
+        const overlapsBody = snake.cells.some(cell => cell.x === o.x && cell.y === o.y);
+        const nearHead = Math.abs(o.x - snake.x) <= grid * 3 && Math.abs(o.y - snake.y) <= grid * 3;
+        return !overlapsBody && !nearHead;
       });
     }
 
@@ -251,18 +316,68 @@
       const config = getLevelConfig(currentLevel);
       targetScoreElement.innerText = config.targetScore;
 
-      // NOTA: No modificamos snake.x, snake.y, snake.cells ni la dirección (dx, dy).
-      // La culebra continuará exactamente desde donde estaba.
-
+      // Se conserva la posición, células y dirección sin resetear nada
       obstacles = generateObstacles(currentLevel);
       placeApple();
+    }
+
+    function showOverlay(title, desc, btnText, action) {
+      overlayTitle.innerText = title;
+      overlayDesc.innerText = desc;
+      overlayBtn.innerText = btnText;
+      overlay.classList.remove("hidden");
+      isPaused = true;
+      pendingAction = action;
+    }
+
+    overlayBtn.addEventListener("click", () => {
+      overlay.classList.add("hidden");
+      isPaused = false;
+      if (pendingAction) {
+        const act = pendingAction;
+        pendingAction = null;
+        act();
+      }
+    });
+
+    function triggerLevelSuccess() {
+      if (currentLevel < maxLevels) {
+        showOverlay(
+          `¡Nivel ${currentLevel} Superado!`,
+          `Siguiente desafío: Nivel ${currentLevel + 1}. Mantenes tu posición y tamaño.`,
+          "¡Continuar!",
+          () => {
+            loadLevel(currentLevel + 1);
+          }
+        );
+      } else {
+        showOverlay(
+          "¡FELICIDADES!",
+          "¡Has superado los 20 Niveles del juego!",
+          "Volver a Jugar",
+          () => {
+            resetGame();
+          }
+        );
+      }
+    }
+
+    function triggerGameOver(reason) {
+      showOverlay(
+        "¡Juego Terminado!",
+        reason,
+        "Reintentar",
+        () => {
+          resetGame();
+        }
+      );
     }
 
     function resetGame() {
       score = 0;
       scoreElement.innerText = score;
       
-      // Solo al reiniciar el juego desde cero restablecemos la posición inicial y el tamaño
+      // Solo vuelve al centro al perder el juego
       snake.x = 160;
       snake.y = 160;
       snake.dx = grid;
@@ -278,6 +393,8 @@
 
     function loop() {
       requestAnimationFrame(loop);
+
+      if (isPaused) return;
 
       const config = getLevelConfig(currentLevel);
 
@@ -313,56 +430,67 @@
 
       // Dibujar Culebrita
       ctx.fillStyle = "#2ea043";
+
+      let ateApple = false;
+      let crashedSelf = false;
+      let crashedObs = false;
+
       snake.cells.forEach((cell, index) => {
         ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
 
-        // Comer la manzana
+        // Comer manzana
         if (cell.x === apple.x && cell.y === apple.y) {
-          snake.maxCells++;
-          score += 10;
-          scoreElement.innerText = score;
-
-          if (score > highScore) {
-            highScore = score;
-            highScoreElement.innerText = highScore;
-            localStorage.setItem("snakeHighScoreLevels", highScore);
-          }
-
-          if (score >= config.targetScore) {
-            if (currentLevel < maxLevels) {
-              alert(`¡Nivel ${currentLevel} superado! Transicionando al Nivel ${currentLevel + 1}...`);
-              loadLevel(currentLevel + 1);
-            } else {
-              alert("¡FELICIDADES! ¡Has superado los 20 Niveles!");
-              resetGame();
-            }
-          } else {
-            placeApple();
-          }
+          ateApple = true;
         }
 
         // Colisión consigo misma
         for (let i = index + 1; i < snake.cells.length; i++) {
           if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-            alert("¡Chocaste contigo mismo! Reiniciando juego...");
-            resetGame();
+            crashedSelf = true;
           }
         }
 
         // Colisión con Obstáculos
         for (let obs of obstacles) {
           if (cell.x === obs.x && cell.y === obs.y) {
-            alert("¡Chocaste con un obstáculo! Reiniciando...");
-            resetGame();
+            crashedObs = true;
           }
         }
       });
+
+      if (crashedSelf) {
+        triggerGameOver("Chocaste contigo mismo.");
+        return;
+      }
+
+      if (crashedObs) {
+        triggerGameOver("Chocaste con un obstáculo.");
+        return;
+      }
+
+      if (ateApple) {
+        snake.maxCells++;
+        score += 10;
+        scoreElement.innerText = score;
+
+        if (score > highScore) {
+          highScore = score;
+          highScoreElement.innerText = highScore;
+          localStorage.setItem("snakeHighScoreLevels", highScore);
+        }
+
+        if (score >= config.targetScore) {
+          triggerLevelSuccess();
+        } else {
+          placeApple();
+        }
+      }
     }
 
-    function moveUp() { if (snake.dy === 0) { snake.dy = -grid; snake.dx = 0; } }
-    function moveDown() { if (snake.dy === 0) { snake.dy = grid; snake.dx = 0; } }
-    function moveLeft() { if (snake.dx === 0) { snake.dx = -grid; snake.dy = 0; } }
-    function moveRight() { if (snake.dx === 0) { snake.dx = grid; snake.dy = 0; } }
+    function moveUp() { if (!isPaused && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; } }
+    function moveDown() { if (!isPaused && snake.dy === 0) { snake.dy = grid; snake.dx = 0; } }
+    function moveLeft() { if (!isPaused && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; } }
+    function moveRight() { if (!isPaused && snake.dx === 0) { snake.dx = grid; snake.dy = 0; } }
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" || e.key === "a") moveLeft();
