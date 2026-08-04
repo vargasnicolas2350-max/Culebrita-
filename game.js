@@ -37,10 +37,10 @@ function resetGame() {
   apple.y = getRandomInt(0, 20) * grid;
 }
 
+// Bucle principal del juego
 function loop() {
   requestAnimationFrame(loop);
 
-  // Control de velocidad (mientras mayor el número, más lento)
   if (++count < 6) return;
   count = 0;
 
@@ -49,7 +49,7 @@ function loop() {
   snake.x += snake.dx;
   snake.y += snake.dy;
 
-  // Envolver la serpiente en los bordes de la pantalla (atravesar paredes)
+  // Envolver serpiente en bordes
   if (snake.x < 0) snake.x = canvas.width - grid;
   else if (snake.x >= canvas.width) snake.x = 0;
 
@@ -62,11 +62,11 @@ function loop() {
     snake.cells.pop();
   }
 
-  // Dibujar comida
+  // Dibujar manzana
   ctx.fillStyle = "#f85149";
   ctx.fillRect(apple.x, apple.y, grid - 1, grid - 1);
 
-  // Dibujar cuerpo de la culebrita
+  // Dibujar culebrita
   ctx.fillStyle = "#2ea043";
   snake.cells.forEach((cell, index) => {
     ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
@@ -96,21 +96,58 @@ function loop() {
   });
 }
 
-// Captura de controles de teclado
+// Lógica de cambio de dirección
+function moveUp() {
+  if (snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+}
+function moveDown() {
+  if (snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+}
+function moveLeft() {
+  if (snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+}
+function moveRight() {
+  if (snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+}
+
+// 1. Controles por teclado
 document.addEventListener("keydown", (e) => {
-  if ((e.key === "ArrowLeft" || e.key === "a") && snake.dx === 0) {
-    snake.dx = -grid;
-    snake.dy = 0;
-  } else if ((e.key === "ArrowUp" || e.key === "w") && snake.dy === 0) {
-    snake.dy = -grid;
-    snake.dx = 0;
-  } else if ((e.key === "ArrowRight" || e.key === "d") && snake.dx === 0) {
-    snake.dx = grid;
-    snake.dy = 0;
-  } else if ((e.key === "ArrowDown" || e.key === "s") && snake.dy === 0) {
-    snake.dy = grid;
-    snake.dx = 0;
-  }
+  if (e.key === "ArrowLeft" || e.key === "a") moveLeft();
+  else if (e.key === "ArrowUp" || e.key === "w") moveUp();
+  else if (e.key === "ArrowRight" || e.key === "d") moveRight();
+  else if (e.key === "ArrowDown" || e.key === "s") moveDown();
 });
+
+// 2. Controles por Botones Táctiles en pantalla
+document.getElementById("btn-up").addEventListener("click", moveUp);
+document.getElementById("btn-down").addEventListener("click", moveDown);
+document.getElementById("btn-left").addEventListener("click", moveLeft);
+document.getElementById("btn-right").addEventListener("click", moveRight);
+
+// 3. Controles por Gestos (Swipe) en la pantalla táctil
+let touchStartX = 0;
+let touchStartY = 0;
+
+canvas.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, false);
+
+canvas.addEventListener("touchend", (e) => {
+  let touchEndX = e.changedTouches[0].clientX;
+  let touchEndY = e.changedTouches[0].clientY;
+
+  let diffX = touchEndX - touchStartX;
+  let diffY = touchEndY - touchStartY;
+
+  // Detectar la dirección con mayor desplazamiento
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+    if (diffX > 20) moveRight();
+    else if (diffX < -20) moveLeft();
+  } else {
+    if (diffY > 20) moveDown();
+    else if (diffY < -20) moveUp();
+  }
+}, false);
 
 requestAnimationFrame(loop);
