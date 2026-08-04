@@ -153,7 +153,7 @@
     </div>
 
     <div class="controls-hint">
-      Comer manzanas hace crecer a la culebra y mantendrá su tamaño entre niveles.
+      El cuerpo de la culebra mantiene exactamente el mismo tamaño al cambiar de nivel.
     </div>
   </div>
 
@@ -179,7 +179,7 @@
       dx: grid,
       dy: 0,
       cells: [],
-      maxCells: 4 // Tamaño inicial al arrancar el juego
+      maxCells: 4 // Tamaña inicial al arrancar el juego por primera vez
     };
 
     let apple = { x: 320, y: 320 };
@@ -249,12 +249,17 @@
       const config = getLevelConfig(currentLevel);
       targetScoreElement.innerText = config.targetScore;
 
-      // Reubicamos la cabeza y reiniciamos la dirección pero MANTENEMOS snake.maxCells (su tamaño actual)
+      // Reubicamos la cabeza
       snake.x = 160;
       snake.y = 160;
-      snake.cells = [];
       snake.dx = grid;
       snake.dy = 0;
+
+      // Reconstruimos las celdas del cuerpo con el tamaño acumulado actual (snake.maxCells)
+      snake.cells = [];
+      for (let i = 0; i < snake.maxCells; i++) {
+        snake.cells.push({ x: snake.x - (i * grid), y: snake.y });
+      }
 
       obstacles = generateObstacles(currentLevel);
       placeApple();
@@ -263,7 +268,7 @@
     function resetGame() {
       score = 0;
       scoreElement.innerText = score;
-      snake.maxCells = 4; // Solo aquí (al perder/reiniciar) vuelve al tamaño inicial
+      snake.maxCells = 4; // Solo vuelve a tamaño 4 cuando pierdes el juego
       loadLevel(1);
     }
 
@@ -309,7 +314,7 @@
 
         // Comer la manzana
         if (cell.x === apple.x && cell.y === apple.y) {
-          snake.maxCells++; // Crece en tamaño cada vez que come
+          snake.maxCells++; // Crece en tamaño
           score += 10;
           scoreElement.innerText = score;
 
@@ -352,7 +357,7 @@
 
     function moveUp() { if (snake.dy === 0) { snake.dy = -grid; snake.dx = 0; } }
     function moveDown() { if (snake.dy === 0) { snake.dy = grid; snake.dx = 0; } }
-    function moveLeft() { if (snake.dx === 0) { snake.dx = -grid; snake.dy = 0; } }
+    function moveLeft() { if (snake.dx === 0) { snake.dx = 0; snake.dy = 0; } }
     function moveRight() { if (snake.dx === 0) { snake.dx = grid; snake.dy = 0; } }
 
     document.addEventListener("keydown", (e) => {
