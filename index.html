@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de la Culebrita (Snake)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>🐍 Juego de la Culebrita</h1>
+    <div class="score-board">
+      <div>Puntaje: <span id="score">0</span></div>
+      <div>Máximo: <span id="high-score">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="controls-hint">
+      Usa las <strong>Flechas del Teclado</strong> para mover la culebrita.
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
