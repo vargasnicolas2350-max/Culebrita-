@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Juego de la Culebrita - Crecimiento Continuo Pro</title>
+  <title>Juego de la Culebrita - Estilo Ilustrado</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,13 +14,12 @@
       touch-action: manipulation;
     }
 
-    /* Configuración por defecto: Estática para PC */
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Evita cualquier scroll en escritorio */
-      background-color: #090d12;
-      color: #c9d1d9;
+      overflow: hidden;
+      background-color: #0d160e;
+      color: #e6edf3;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
@@ -29,11 +28,11 @@
 
     .game-container {
       text-align: center;
-      background-color: #121720;
+      background-color: #172419;
       padding: 16px;
-      border-radius: 16px;
-      border: 1px solid #2d3544;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), 0 0 15px rgba(88, 166, 255, 0.1);
+      border-radius: 20px;
+      border: 2px solid #2e4a30;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(76, 175, 80, 0.2);
       width: 100%;
       max-width: 440px;
       position: relative;
@@ -48,7 +47,7 @@
 
     h1 {
       font-size: 20px;
-      color: #58a6ff;
+      color: #7ce368;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
@@ -56,9 +55,9 @@
     }
 
     .icon-btn {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #c9d1d9;
+      background: #233826;
+      border: 1px solid #36543a;
+      color: #e6edf3;
       border-radius: 8px;
       width: 34px;
       height: 34px;
@@ -71,8 +70,8 @@
     }
 
     .icon-btn:hover, .icon-btn:active {
-      background-color: #30363d;
-      border-color: #58a6ff;
+      background-color: #314d35;
+      border-color: #7ce368;
     }
 
     .score-board {
@@ -82,10 +81,10 @@
       font-size: 13px;
       font-weight: bold;
       margin-bottom: 10px;
-      background-color: #1a202c;
+      background-color: #101c12;
       padding: 10px;
       border-radius: 10px;
-      border: 1px solid #2b3245;
+      border: 1px solid #233a26;
     }
 
     .score-card {
@@ -98,29 +97,28 @@
     .score-label {
       font-size: 10px;
       text-transform: uppercase;
-      color: #8b949e;
+      color: #83a386;
       letter-spacing: 0.5px;
     }
 
-    .level-val { color: #f29d38; }
-    .score-val { color: #2ea043; }
-    .high-val { color: #e3b341; }
+    .level-val { color: #ffb74d; }
+    .score-val { color: #81c784; }
+    .high-val { color: #ffd54f; }
 
-    /* Barra de progreso de nivel */
     .progress-container {
       width: 100%;
       height: 6px;
-      background-color: #1a202c;
+      background-color: #101c12;
       border-radius: 4px;
       margin-bottom: 12px;
       overflow: hidden;
-      border: 1px solid #2b3245;
+      border: 1px solid #233a26;
     }
 
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #2ea043, #3fb950);
+      background: linear-gradient(90deg, #4caf50, #81c784);
       transition: width 0.2s ease-out;
     }
 
@@ -132,23 +130,22 @@
     }
 
     canvas {
-      background-color: #05080c;
-      border: 2px solid #2d3544;
-      border-radius: 10px;
+      background-color: #55a630;
+      border: 3px solid #2d5a1e;
+      border-radius: 12px;
       display: block;
       width: 100%;
       height: auto;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
     }
 
-    /* Modal Overlay */
     .overlay {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(9, 13, 18, 0.92);
+      background: rgba(13, 22, 14, 0.92);
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
@@ -166,26 +163,24 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    .overlay.hidden {
-      display: none;
-    }
+    .overlay.hidden { display: none; }
 
     .overlay h2 {
       font-size: 22px;
-      color: #58a6ff;
+      color: #7ce368;
       margin-bottom: 8px;
     }
 
     .overlay p {
       font-size: 13px;
-      color: #8b949e;
+      color: #a3c2a5;
       margin-bottom: 18px;
-      max-width: 80%;
+      max-width: 85%;
       line-height: 1.4;
     }
 
     .overlay button {
-      background: linear-gradient(135deg, #2ea043, #238636);
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
       color: white;
       border: none;
       padding: 10px 24px;
@@ -193,16 +188,14 @@
       font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(46, 160, 67, 0.3);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
       transition: transform 0.1s, box-shadow 0.15s;
     }
 
     .overlay button:active {
       transform: scale(0.96);
-      box-shadow: 0 2px 6px rgba(46, 160, 67, 0.2);
     }
 
-    /* Controles D-Pad (Ocultos por defecto en PC) */
     .dpad-container {
       display: none;
       flex-direction: column;
@@ -216,17 +209,14 @@
       align-items: center;
     }
 
-    .dpad-center {
-      width: 52px;
-      height: 52px;
-    }
+    .dpad-center { width: 52px; height: 52px; }
 
     .dpad-btn {
       width: 52px;
       height: 52px;
-      background-color: #1a202c;
-      color: #58a6ff;
-      border: 1px solid #2b3245;
+      background-color: #233826;
+      color: #7ce368;
+      border: 1px solid #36543a;
       border-radius: 10px;
       font-size: 18px;
       font-weight: bold;
@@ -240,28 +230,24 @@
     }
 
     .dpad-btn:active {
-      background-color: #2d3544;
-      color: #3fb950;
+      background-color: #36543a;
+      color: #a5d6a7;
       transform: scale(0.92);
     }
 
     .controls-hint {
       margin-top: 10px;
       font-size: 11px;
-      color: #6e7681;
+      color: #6b8e6e;
     }
 
-    /* --- ADAPTACIÓN RESPONSIVA PARA DISPOSITIVOS MÓVILES --- */
     @media (hover: none) and (pointer: coarse), (max-width: 768px) {
       html, body {
-        overflow: auto; /* Permite scroll adaptativo en pantallas pequeñas */
+        overflow: auto;
         align-items: flex-start;
         padding: 10px;
       }
-
-      .dpad-container {
-        display: flex; /* Se activan los botones táctiles */
-      }
+      .dpad-container { display: flex; }
     }
   </style>
 </head>
@@ -299,12 +285,11 @@
 
       <div id="overlay" class="overlay">
         <h2 id="overlay-title">¡Bienvenido!</h2>
-        <p id="overlay-desc">Supera los 20 niveles. Tu culebrita conservará su posición y tamaño entre niveles.</p>
+        <p id="overlay-desc">Supera los 20 niveles. Desde el Nivel 2 la velocidad aumentará constantemente.</p>
         <button id="overlay-btn">Iniciar Juego</button>
       </div>
     </div>
 
-    <!-- Controles táctiles D-Pad (se muestran automáticamente en móvil) -->
     <div id="dpad" class="dpad-container">
       <div class="dpad-row">
         <button id="btn-up" class="dpad-btn">▲</button>
@@ -325,28 +310,21 @@
   </div>
 
   <script>
-    // --- DETECCIÓN DE DISPOSITIVO MÓVIL ---
     const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 768;
-
     const hintText = document.getElementById("hint-text");
-    if (isMobile) {
-      hintText.innerText = "Desliza en pantalla o usa la cruceta táctil";
-    }
+    if (isMobile) hintText.innerText = "Desliza en pantalla o usa la cruceta táctil";
 
-    // --- SINTETIZADOR DE SONIDO (Web Audio API) ---
     class SoundManager {
       constructor() {
         this.audioCtx = null;
         this.muted = false;
       }
-
       init() {
         if (!this.audioCtx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.audioCtx = new AudioContext();
         }
       }
-
       playEat() {
         if (this.muted) return;
         this.init();
@@ -362,7 +340,6 @@
         osc.start();
         osc.stop(this.audioCtx.currentTime + 0.08);
       }
-
       playGolden() {
         if (this.muted) return;
         this.init();
@@ -380,7 +357,6 @@
           osc.stop(now + idx * 0.04 + 0.08);
         });
       }
-
       playLevelUp() {
         if (this.muted) return;
         this.init();
@@ -398,7 +374,6 @@
           osc.stop(now + idx * 0.06 + 0.12);
         });
       }
-
       playGameOver() {
         if (this.muted) return;
         this.init();
@@ -419,7 +394,6 @@
 
     const sound = new SoundManager();
 
-    // --- ELEMENTOS DEL DOM ---
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const scoreElement = document.getElementById("score");
@@ -435,7 +409,6 @@
     const btnSound = document.getElementById("btn-sound");
     const btnPause = document.getElementById("btn-pause");
 
-    // --- VARIABLES DE JUEGO ---
     const grid = 20;
     let count = 0;
     let score = 0;
@@ -463,7 +436,6 @@
     let obstacles = [];
     let particles = [];
 
-    // --- SISTEMA DE PARTÍCULAS ---
     function spawnParticles(x, y, color, count = 10) {
       for (let i = 0; i < count; i++) {
         particles.push({
@@ -500,46 +472,71 @@
       ctx.globalAlpha = 1.0;
     }
 
-    // --- CONFIGURACIÓN DE NIVELES ---
+    // --- CONFIGURACIÓN DE VELOCIDAD MEJORADA DESDE EL NIVEL 2 ---
     function getLevelConfig(lvl) {
       const targetScore = lvl * 100;
-      const speedStep = Math.max(2, Math.floor(9 - (lvl * 0.35)));
+      // Incremento rápido de velocidad a partir del nivel 2 (pasos de frames más bajos)
+      let speedStep = 10;
+      if (lvl >= 2) {
+        speedStep = Math.max(2, 9 - Math.floor((lvl - 2) * 0.45));
+      }
       return { targetScore, speedStep };
     }
 
+    // --- GENERACIÓN DE OBSTÁCULOS CONFIGURABLE (PARES O DISTRIBUIDOS DESDE EL 10) ---
     function generateObstacles(lvl) {
+      if (lvl <= 1) return [];
+
       let obs = [];
-      if (lvl >= 3 && lvl < 6) {
-        for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-            obs.push({ x: 260 + i * grid, y: 260 + j * grid });
-          }
-        }
-      } else if (lvl >= 6 && lvl < 10) {
-        const positions = [
-          [60, 60], [60, 80], [80, 60],
-          [320, 60], [320, 80], [300, 60],
-          [60, 320], [60, 300], [80, 320],
-          [320, 320], [300, 320], [320, 300]
+
+      // A partir del Nivel 10 se activan patrones y estructuras específicas de un solo bloque por posición
+      if (lvl >= 10) {
+        const patterns = [
+          // Nivel 10: Bloques individuales en esquinas
+          [{x: 60, y: 60}, {x: 320, y: 60}, {x: 60, y: 320}, {x: 320, y: 320}, {x: 200, y: 80}],
+          // Nivel 11: Muro central dividido
+          [{x: 200, y: 40}, {x: 200, y: 60}, {x: 200, y: 80}, {x: 200, y: 300}, {x: 200, y: 320}, {x: 200, y: 340}],
+          // Nivel 12: Anillo perimetral interno de bloques individuales
+          [{x: 100, y: 100}, {x: 280, y: 100}, {x: 100, y: 280}, {x: 280, y: 280}, {x: 190, y: 190}],
+          // Nivel 13+: Cruz dispersa
+          [{x: 100, y: 200}, {x: 120, y: 200}, {x: 280, y: 200}, {x: 300, y: 200}, {x: 200, y: 100}, {x: 200, y: 300}]
         ];
-        positions.forEach(p => obs.push({ x: p[0], y: p[1] }));
-      } else if (lvl >= 10 && lvl < 15) {
-        for (let i = 60; i <= 340; i += 20) {
-          obs.push({ x: i, y: 240 });
-          obs.push({ x: 240, y: i });
-        }
-      } else if (lvl >= 15) {
-        for (let i = 40; i <= 340; i += 40) {
-          obs.push({ x: i, y: 80 });
-          obs.push({ x: 400 - i, y: 320 });
-        }
+        
+        const patternIdx = (lvl - 10) % patterns.length;
+        return patterns[patternIdx].filter(o => {
+          const overlapsBody = snake.cells.some(cell => cell.x === o.x && cell.y === o.y);
+          const nearHead = Math.abs(o.x - snake.x) <= grid * 3 && Math.abs(o.y - snake.y) <= grid * 3;
+          return !overlapsBody && !nearHead;
+        });
       }
 
-      return obs.filter(o => {
-        const overlapsBody = snake.cells.some(cell => cell.x === o.x && cell.y === o.y);
-        const nearHead = Math.abs(o.x - snake.x) <= grid * 3 && Math.abs(o.y - snake.y) <= grid * 3;
-        return !overlapsBody && !nearHead;
-      });
+      // Del Nivel 2 al 9: Aumenta de a 2 bloques por nivel
+      const obstacleCount = (lvl - 1) * 2;
+      for (let i = 0; i < obstacleCount; i++) {
+        let valid = false;
+        let attempts = 0;
+        let ox = 0, oy = 0;
+
+        while (!valid && attempts < 100) {
+          attempts++;
+          ox = getRandomInt(0, 20) * grid;
+          oy = getRandomInt(0, 20) * grid;
+          valid = true;
+
+          if (Math.abs(ox - snake.x) <= grid * 3 && Math.abs(oy - snake.y) <= grid * 3) valid = false;
+
+          for (let cell of snake.cells) {
+            if (cell.x === ox && cell.y === oy) { valid = false; break; }
+          }
+          for (let o of obs) {
+            if (o.x === ox && o.y === oy) { valid = false; break; }
+          }
+        }
+
+        if (valid) obs.push({ x: ox, y: oy });
+      }
+
+      return obs;
     }
 
     function getRandomInt(min, max) {
@@ -635,7 +632,6 @@
     }
 
     btnPause.addEventListener("click", togglePause);
-
     btnSound.addEventListener("click", () => {
       sound.muted = !sound.muted;
       btnSound.innerText = sound.muted ? "🔇" : "🔊";
@@ -643,19 +639,19 @@
 
     function triggerLevelSuccess() {
       sound.playLevelUp();
-      spawnParticles(snake.x, snake.y, "#58a6ff", 25);
+      spawnParticles(snake.x, snake.y, "#7ce368", 25);
 
       if (currentLevel < maxLevels) {
         showOverlay(
           `¡Nivel ${currentLevel} Superado!`,
-          `¡Excelente! Preparando Nivel ${currentLevel + 1}. Mantenes tu posición y longitud.`,
+          `¡Genial! Preparando Nivel ${currentLevel + 1}. Aumenta la velocidad y la dificultad de bloques.`,
           "Siguiente Nivel",
           () => loadLevel(currentLevel + 1)
         );
       } else {
         showOverlay(
-          "🏆 ¡FELICIDADES!",
-          "¡Has superado los 20 Niveles del juego con éxito!",
+          "🏆 ¡VICTORIA TOTAL!",
+          "¡Has superado exitosamente los 20 Niveles del juego!",
           "Jugar de Nuevo",
           () => resetGame()
         );
@@ -664,7 +660,7 @@
 
     function triggerGameOver(reason) {
       sound.playGameOver();
-      spawnParticles(snake.x, snake.y, "#f85149", 30);
+      spawnParticles(snake.x, snake.y, "#f44336", 30);
 
       showOverlay(
         "¡Juego Terminado!",
@@ -692,7 +688,6 @@
       loadLevel(1);
     }
 
-    // --- BUCLE PRINCIPAL ---
     function loop() {
       requestAnimationFrame(loop);
 
@@ -742,24 +737,15 @@
       let crashedObs = false;
 
       snake.cells.forEach((cell, index) => {
-        if (cell.x === apple.x && cell.y === apple.y) {
-          ateApple = true;
-        }
-
-        if (goldenApple && cell.x === goldenApple.x && cell.y === goldenApple.y) {
-          ateGolden = true;
-        }
+        if (cell.x === apple.x && cell.y === apple.y) ateApple = true;
+        if (goldenApple && cell.x === goldenApple.x && cell.y === goldenApple.y) ateGolden = true;
 
         for (let i = index + 1; i < snake.cells.length; i++) {
-          if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-            crashedSelf = true;
-          }
+          if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) crashedSelf = true;
         }
 
         for (let obs of obstacles) {
-          if (cell.x === obs.x && cell.y === obs.y) {
-            crashedObs = true;
-          }
+          if (cell.x === obs.x && cell.y === obs.y) crashedObs = true;
         }
       });
 
@@ -769,13 +755,13 @@
       }
 
       if (crashedObs) {
-        triggerGameOver("Chocaste con un obstáculo.");
+        triggerGameOver("Chocaste con un bloque de dificultad.");
         return;
       }
 
       if (ateApple) {
         sound.playEat();
-        spawnParticles(apple.x, apple.y, "#f85149", 12);
+        spawnParticles(apple.x, apple.y, "#e53935", 12);
         snake.maxCells++;
         score += 10;
         scoreElement.innerText = score;
@@ -797,7 +783,7 @@
 
       if (ateGolden) {
         sound.playGolden();
-        spawnParticles(goldenApple.x, goldenApple.y, "#e3b341", 20);
+        spawnParticles(goldenApple.x, goldenApple.y, "#fdd835", 20);
         score += 30;
         scoreElement.innerText = score;
         updateProgressBar();
@@ -818,37 +804,26 @@
       updateAndDrawParticles();
     }
 
-    // --- DIBUJO DE ELEMENTOS EN CANVAS ---
     function drawGameElements() {
-      ctx.fillStyle = "#3a4354";
       obstacles.forEach(obs => {
+        ctx.fillStyle = "#263238";
         ctx.beginPath();
         ctx.roundRect(obs.x + 1, obs.y + 1, grid - 2, grid - 2, 4);
         ctx.fill();
+        ctx.strokeStyle = "#37474f";
+        ctx.lineWidth = 1;
+        ctx.stroke();
       });
 
-      ctx.fillStyle = "#f85149";
-      ctx.shadowColor = "#f85149";
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(apple.x + grid / 2, apple.y + grid / 2, grid / 2 - 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      drawApple(apple.x, apple.y, "#e53935", "#b71c1c");
 
       if (goldenApple) {
-        ctx.fillStyle = "#e3b341";
-        ctx.shadowColor = "#e3b341";
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.arc(goldenApple.x + grid / 2, goldenApple.y + grid / 2, grid / 2 - 1, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        ctx.strokeStyle = "rgba(227, 179, 65, 0.6)";
+        drawApple(goldenApple.x, goldenApple.y, "#fdd835", "#f57f17");
+        ctx.strokeStyle = "rgba(255, 235, 59, 0.7)";
         ctx.lineWidth = 2;
         ctx.beginPath();
         const pct = goldenApple.timer / 120;
-        ctx.arc(goldenApple.x + grid / 2, goldenApple.y + grid / 2, grid / 2 + 2, 0, Math.PI * 2 * pct);
+        ctx.arc(goldenApple.x + grid / 2, goldenApple.y + grid / 2, grid / 2 + 3, 0, Math.PI * 2 * pct);
         ctx.stroke();
       }
 
@@ -856,34 +831,91 @@
         const isHead = (index === 0);
 
         if (isHead) {
-          ctx.fillStyle = "#2ea043";
+          ctx.save();
+          ctx.translate(cell.x + grid / 2, cell.y + grid / 2);
+
+          let angle = 0;
+          if (snake.dx === grid) angle = Math.PI / 2;
+          else if (snake.dx === -grid) angle = -Math.PI / 2;
+          else if (snake.dy === grid) angle = Math.PI;
+          else if (snake.dy === -grid) angle = 0;
+          ctx.rotate(angle);
+
+          ctx.fillStyle = "#2d6a37";
           ctx.beginPath();
-          ctx.roundRect(cell.x, cell.y, grid - 1, grid - 1, 6);
+          ctx.moveTo(0, -grid / 2 - 2);
+          ctx.quadraticCurveTo(grid / 2 + 3, -2, grid / 2 + 1, grid / 2);
+          ctx.quadraticCurveTo(0, grid / 2 + 2, -grid / 2 - 1, grid / 2);
+          ctx.quadraticCurveTo(-grid / 2 - 3, -2, 0, -grid / 2 - 2);
           ctx.fill();
 
           ctx.fillStyle = "#ffffff";
-          let eyeX1 = cell.x + 5, eyeY1 = cell.y + 5;
-          let eyeX2 = cell.x + 13, eyeY2 = cell.y + 5;
-
-          if (snake.dx === grid) { eyeX1 = cell.x + 12; eyeX2 = cell.x + 12; eyeY1 = cell.y + 4; eyeY2 = cell.y + 12; }
-          else if (snake.dx === -grid) { eyeX1 = cell.x + 4; eyeX2 = cell.x + 4; eyeY1 = cell.y + 4; eyeY2 = cell.y + 12; }
-          else if (snake.dy === grid) { eyeY1 = cell.y + 12; eyeY2 = cell.y + 12; eyeX1 = cell.x + 4; eyeX2 = cell.x + 12; }
-
           ctx.beginPath();
-          ctx.arc(eyeX1, eyeY1, 2, 0, Math.PI * 2);
-          ctx.arc(eyeX2, eyeY2, 2, 0, Math.PI * 2);
+          ctx.ellipse(-5, -3, 4, 2, Math.PI / 6, 0, Math.PI * 2);
+          ctx.ellipse(5, -3, 4, 2, -Math.PI / 6, 0, Math.PI * 2);
           ctx.fill();
-        } else {
-          const opacity = Math.max(0.3, 1 - (index / snake.cells.length) * 0.6);
-          ctx.fillStyle = `rgba(46, 160, 67, ${opacity})`;
+
+          ctx.fillStyle = "#000000";
           ctx.beginPath();
-          ctx.roundRect(cell.x + 1, cell.y + 1, grid - 3, grid - 3, 4);
+          ctx.arc(-5, -3, 1.5, 0, Math.PI * 2);
+          ctx.arc(5, -3, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#1a3a1f";
+          ctx.beginPath();
+          ctx.arc(-2, -7, 1, 0, Math.PI * 2);
+          ctx.arc(2, -7, 1, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        } else {
+          ctx.fillStyle = "#2d6a37";
+          ctx.beginPath();
+          ctx.roundRect(cell.x + 1, cell.y + 1, grid - 2, grid - 2, 4);
+          ctx.fill();
+
+          ctx.fillStyle = "#cddc39";
+          ctx.beginPath();
+          ctx.ellipse(cell.x + grid / 2, cell.y + grid / 2, grid / 3, grid / 5, 0, 0, Math.PI * 2);
           ctx.fill();
         }
       });
     }
 
-    // --- CONTROLES Y NAVEGACIÓN ---
+    function drawApple(x, y, colorMain, colorShadow) {
+      const cx = x + grid / 2;
+      const cy = y + grid / 2 + 1;
+
+      ctx.fillStyle = "rgba(0,0,0,0.2)";
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 7, 7, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = colorMain;
+      ctx.beginPath();
+      ctx.arc(cx - 3, cy - 2, 6, 0, Math.PI * 2);
+      ctx.arc(cx + 3, cy - 2, 6, 0, Math.PI * 2);
+      ctx.arc(cx, cy + 2, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.beginPath();
+      ctx.arc(cx - 3, cy - 4, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#5d4037";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 6);
+      ctx.quadraticCurveTo(cx + 2, cy - 10, cx + 4, cy - 11);
+      ctx.stroke();
+
+      ctx.fillStyle = "#76ff03";
+      ctx.beginPath();
+      ctx.ellipse(cx + 4, cy - 9, 3, 1.5, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     function queueInput(dir) {
       if (isPaused) return;
 
@@ -891,15 +923,10 @@
         ? inputsQueue[inputsQueue.length - 1]
         : { dx: snake.dx, dy: snake.dy };
 
-      if (dir === "UP" && lastDir.dy === 0) {
-        inputsQueue.push({ dx: 0, dy: -grid });
-      } else if (dir === "DOWN" && lastDir.dy === 0) {
-        inputsQueue.push({ dx: 0, dy: grid });
-      } else if (dir === "LEFT" && lastDir.dx === 0) {
-        inputsQueue.push({ dx: -grid, dy: 0 });
-      } else if (dir === "RIGHT" && lastDir.dx === 0) {
-        inputsQueue.push({ dx: grid, dy: 0 });
-      }
+      if (dir === "UP" && lastDir.dy === 0) inputsQueue.push({ dx: 0, dy: -grid });
+      else if (dir === "DOWN" && lastDir.dy === 0) inputsQueue.push({ dx: 0, dy: grid });
+      else if (dir === "LEFT" && lastDir.dx === 0) inputsQueue.push({ dx: -grid, dy: 0 });
+      else if (dir === "RIGHT" && lastDir.dx === 0) inputsQueue.push({ dx: grid, dy: 0 });
     }
 
     document.addEventListener("keydown", (e) => {
@@ -915,10 +942,9 @@
     document.getElementById("btn-left").addEventListener("click", () => queueInput("LEFT"));
     document.getElementById("btn-right").addEventListener("click", () => queueInput("RIGHT"));
 
-    // Gestos Táctiles (Swipe)
     let touchStartX = 0, touchStartY = 0;
     canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault(); // Evita scroll o zoom accidental en móvil
+      e.preventDefault();
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
     }, { passive: false });
@@ -936,7 +962,6 @@
       }
     }, false);
 
-    // Inicialización del juego
     resetGame();
     requestAnimationFrame(loop);
   </script>
