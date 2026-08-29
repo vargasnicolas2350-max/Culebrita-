@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Juego de la Culebrita - Crecimiento Continuo Pro</title>
   <style>
     * {
@@ -14,15 +14,17 @@
       touch-action: manipulation;
     }
 
-    body {
+    /* Configuración por defecto: Estática para PC */
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* Evita cualquier scroll en escritorio */
       background-color: #090d12;
       color: #c9d1d9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 12px;
     }
 
     .game-container {
@@ -200,9 +202,9 @@
       box-shadow: 0 2px 6px rgba(46, 160, 67, 0.2);
     }
 
-    /* Controles D-Pad */
+    /* Controles D-Pad (Ocultos por defecto en PC) */
     .dpad-container {
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       margin-top: 14px;
@@ -248,6 +250,19 @@
       font-size: 11px;
       color: #6e7681;
     }
+
+    /* --- ADAPTACIÓN RESPONSIVA PARA DISPOSITIVOS MÓVILES --- */
+    @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+      html, body {
+        overflow: auto; /* Permite scroll adaptativo en pantallas pequeñas */
+        align-items: flex-start;
+        padding: 10px;
+      }
+
+      .dpad-container {
+        display: flex; /* Se activan los botones táctiles */
+      }
+    }
   </style>
 </head>
 <body>
@@ -289,8 +304,8 @@
       </div>
     </div>
 
-    <!-- Controles táctiles D-Pad -->
-    <div class="dpad-container">
+    <!-- Controles táctiles D-Pad (se muestran automáticamente en móvil) -->
+    <div id="dpad" class="dpad-container">
       <div class="dpad-row">
         <button id="btn-up" class="dpad-btn">▲</button>
       </div>
@@ -304,12 +319,20 @@
       </div>
     </div>
 
-    <div class="controls-hint">
+    <div id="hint-text" class="controls-hint">
       Teclas: Flechas / WASD | Pausa: P o ESC
     </div>
   </div>
 
   <script>
+    // --- DETECCIÓN DE DISPOSITIVO MÓVIL ---
+    const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 768;
+
+    const hintText = document.getElementById("hint-text");
+    if (isMobile) {
+      hintText.innerText = "Desliza en pantalla o usa la cruceta táctil";
+    }
+
     // --- SINTETIZADOR DE SONIDO (Web Audio API) ---
     class SoundManager {
       constructor() {
@@ -421,7 +444,7 @@
     let maxLevels = 20;
     let isPaused = true;
     let pendingAction = null;
-    let inputsQueue = []; // Cola de comandos para movimientos fluidos
+    let inputsQueue = [];
 
     let highScore = localStorage.getItem("snakeHighScoreLevels") || 0;
     highScoreElement.innerText = highScore;
@@ -436,7 +459,7 @@
     };
 
     let apple = { x: 320, y: 320 };
-    let goldenApple = null; // { x, y, timer }
+    let goldenApple = null;
     let obstacles = [];
     let particles = [];
 
@@ -512,7 +535,6 @@
         }
       }
 
-      // Filtrar obstáculos para no tocar al cuerpo de la serpiente
       return obs.filter(o => {
         const overlapsBody = snake.cells.some(cell => cell.x === o.x && cell.y === o.y);
         const nearHead = Math.abs(o.x - snake.x) <= grid * 3 && Math.abs(o.y - snake.y) <= grid * 3;
@@ -541,7 +563,7 @@
     }
 
     function trySpawnGoldenApple() {
-      if (goldenApple || Math.random() > 0.3) return; // 30% de probabilidad
+      if (goldenApple || Math.random() > 0.3) return;
       let valid = false;
       let gx = 0, gy = 0;
 
@@ -559,7 +581,7 @@
         }
       }
 
-      goldenApple = { x: gx, y: gy, timer: 120 }; // Permanece ~120 frames
+      goldenApple = { x: gx, y: gy, timer: 120 };
     }
 
     function updateProgressBar() {
@@ -679,7 +701,6 @@
       const config = getLevelConfig(currentLevel);
 
       if (++count < config.speedStep) {
-        // Renderizar partículas fluidas en cada frame de animación
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGameElements();
         updateAndDrawParticles();
@@ -687,7 +708,6 @@
       }
       count = 0;
 
-      // Procesar movimiento desde la cola de inputs
       if (inputsQueue.length > 0) {
         const nextDir = inputsQueue.shift();
         snake.dx = nextDir.dx;
@@ -696,11 +716,9 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Avanzar Serpiente
       snake.x += snake.dx;
       snake.y += snake.dy;
 
-      // Atravesar paredes (Teleport)
       if (snake.x < 0) snake.x = canvas.width - grid;
       else if (snake.x >= canvas.width) snake.x = 0;
 
@@ -713,37 +731,31 @@
         snake.cells.pop();
       }
 
-      // Temporizador Manzana Dorada
       if (goldenApple) {
         goldenApple.timer--;
         if (goldenApple.timer <= 0) goldenApple = null;
       }
 
-      // Colisiones y Comer
       let ateApple = false;
       let ateGolden = false;
       let crashedSelf = false;
       let crashedObs = false;
 
       snake.cells.forEach((cell, index) => {
-        // Comer Manzana Normal
         if (cell.x === apple.x && cell.y === apple.y) {
           ateApple = true;
         }
 
-        // Comer Manzana Dorada
         if (goldenApple && cell.x === goldenApple.x && cell.y === goldenApple.y) {
           ateGolden = true;
         }
 
-        // Colisión Consigo Misma
         for (let i = index + 1; i < snake.cells.length; i++) {
           if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
             crashedSelf = true;
           }
         }
 
-        // Colisión con Obstáculos
         for (let obs of obstacles) {
           if (cell.x === obs.x && cell.y === obs.y) {
             crashedObs = true;
@@ -808,7 +820,6 @@
 
     // --- DIBUJO DE ELEMENTOS EN CANVAS ---
     function drawGameElements() {
-      // 1. Dibujar Obstáculos
       ctx.fillStyle = "#3a4354";
       obstacles.forEach(obs => {
         ctx.beginPath();
@@ -816,16 +827,14 @@
         ctx.fill();
       });
 
-      // 2. Dibujar Manzana Normal
       ctx.fillStyle = "#f85149";
       ctx.shadowColor = "#f85149";
       ctx.shadowBlur = 8;
       ctx.beginPath();
       ctx.arc(apple.x + grid / 2, apple.y + grid / 2, grid / 2 - 2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0; // Limpiar sombra
+      ctx.shadowBlur = 0;
 
-      // 3. Dibujar Manzana Dorada (si existe)
       if (goldenApple) {
         ctx.fillStyle = "#e3b341";
         ctx.shadowColor = "#e3b341";
@@ -835,7 +844,6 @@
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Anillo de temporizador
         ctx.strokeStyle = "rgba(227, 179, 65, 0.6)";
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -844,7 +852,6 @@
         ctx.stroke();
       }
 
-      // 4. Dibujar Serpiente
       snake.cells.forEach((cell, index) => {
         const isHead = (index === 0);
 
@@ -854,7 +861,6 @@
           ctx.roundRect(cell.x, cell.y, grid - 1, grid - 1, 6);
           ctx.fill();
 
-          // Ojos de la culebrita
           ctx.fillStyle = "#ffffff";
           let eyeX1 = cell.x + 5, eyeY1 = cell.y + 5;
           let eyeX2 = cell.x + 13, eyeY2 = cell.y + 5;
@@ -868,7 +874,6 @@
           ctx.arc(eyeX2, eyeY2, 2, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          // Degradado suave en el cuerpo
           const opacity = Math.max(0.3, 1 - (index / snake.cells.length) * 0.6);
           ctx.fillStyle = `rgba(46, 160, 67, ${opacity})`;
           ctx.beginPath();
@@ -913,9 +918,10 @@
     // Gestos Táctiles (Swipe)
     let touchStartX = 0, touchStartY = 0;
     canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault(); // Evita scroll o zoom accidental en móvil
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
-    }, false);
+    }, { passive: false });
 
     canvas.addEventListener("touchend", (e) => {
       let diffX = e.changedTouches[0].clientX - touchStartX;
@@ -936,6 +942,3 @@
   </script>
 </body>
 </html>
-```eof
-
-The game file is ready! You can test the new levels, audio features, direction queueing, and responsive UI elements directly.
